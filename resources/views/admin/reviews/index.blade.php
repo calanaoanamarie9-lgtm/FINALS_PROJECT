@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Customer reviews') }}</h2>
     </x-slot>
@@ -21,4 +21,4 @@
             <div>{{ $reviews->links() }}</div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Transactions') }}</h2>
     </x-slot>
@@ -38,4 +38,4 @@
             <div class="mt-4">{{ $transactions->links() }}</div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>
