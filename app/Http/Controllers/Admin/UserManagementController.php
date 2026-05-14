@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
@@ -43,7 +44,7 @@ class UserManagementController extends Controller
 
         User::query()->create([
             'name' => $data['name'],
-            'email' => $data['email'],
+            'email' => Str::lower($data['email']),
             'phone' => $data['phone'] ?? null,
             'password' => Hash::make($data['password']),
             'role' => UserRole::Staff,
@@ -73,6 +74,7 @@ class UserManagementController extends Controller
 
         $user->update([
             ...$data,
+            'email' => Str::lower($data['email']),
             'is_active' => $request->boolean('is_active'),
         ]);
 
