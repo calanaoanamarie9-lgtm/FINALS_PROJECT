@@ -6,34 +6,63 @@ use App\Enums\BookingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class BookingController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $bookings = Booking::query()
-            ->where('assigned_staff_id', auth()->id())
-            ->with('customer')
+        $bookings = $this->buildQuery($request)
             ->latest()
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         return view('staff.bookings.index', compact('bookings'));
     }
 
-    public function history(): View
+    public function history(Request $request): View
     {
-        $bookings = Booking::query()
-            ->where('assigned_staff_id', auth()->id())
+        $bookings = $this->buildQuery($request)
             ->whereIn('status', [
                 BookingStatus::Delivered,
                 BookingStatus::Cancelled,
             ])
-            ->with('customer')
             ->latest()
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         return view('staff.bookings.history', compact('bookings'));
+    }
+
+    private function buildQuery(Request $request): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = Booking::query()
+            ->where('assigned_staff_id', auth()->id())
+            ->with('customer');
+
+        if ($search = $request->string('search')->toString()) {
+            $query->whereHas('customer', fn ($q) => $q->where('name', 'like', "%{$search}%"));
+        }
+
+        if ($status = $request->string('status')->toString()) {
+            $query->where('status', $status);
+        }
+
+        if ($dateFrom = $request->string('date_from')->toString()) {
+            $query->whereDate('created_at', '>=', $dateFrom);
+        }
+
+        if ($dateTo = $request->string('date_to')->toString()) {
+            $query->whereDate('created_at', '<=', $dateTo);
+        }
+
+        $sort = $request->string('sort')->toString();
+        if ($sort === 'oldest') {
+            $query->oldest();
+        }
+
+        return $query;
     }
 
     public function show(Booking $booking): View

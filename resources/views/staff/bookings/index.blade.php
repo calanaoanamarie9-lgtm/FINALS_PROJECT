@@ -4,9 +4,45 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="mb-4 text-right">
-                <a href="{{ route('staff.bookings.history') }}" class="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:underline">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
+            <div class="flex flex-wrap items-end justify-between gap-3">
+                <form method="get" class="flex flex-wrap items-end gap-3">
+                    <div>
+                        <x-input-label for="search" :value="__('Search')" />
+                        <x-text-input id="search" name="search" type="text" class="mt-1 block" :value="request('search')" placeholder="{{ __('Customer name...') }}" />
+                    </div>
+                    <div>
+                        <x-input-label for="status" :value="__('Status')" />
+                        <select id="status" name="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <option value="">{{ __('All') }}</option>
+                            @foreach (\App\Enums\BookingStatus::cases() as $s)
+                                <option value="{{ $s->value }}" @selected(request('status') === $s->value)>{{ $s->label() }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <x-input-label for="date_from" :value="__('From')" />
+                        <x-text-input id="date_from" name="date_from" type="date" class="mt-1 block" :value="request('date_from')" />
+                    </div>
+                    <div>
+                        <x-input-label for="date_to" :value="__('To')" />
+                        <x-text-input id="date_to" name="date_to" type="date" class="mt-1 block" :value="request('date_to')" />
+                    </div>
+                    <div>
+                        <x-input-label for="sort" :value="__('Sort')" />
+                        <select id="sort" name="sort" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            <option value="newest" @selected(request('sort') === 'newest')>{{ __('Newest') }}</option>
+                            <option value="oldest" @selected(request('sort') === 'oldest')>{{ __('Oldest') }}</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <x-primary-button type="submit">{{ __('Filter') }}</x-primary-button>
+                        @if (request()->anyFilled('search', 'status', 'date_from', 'date_to', 'sort'))
+                            <a href="{{ route('staff.bookings.index') }}" class="inline-flex items-center px-3 py-2 rounded-md text-sm font-semibold text-gray-700 bg-gray-200 hover:bg-gray-300">{{ __('Reset') }}</a>
+                        @endif
+                    </div>
+                </form>
+                <a href="{{ route('staff.bookings.history') }}" class="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:underline shrink-0">
                     {{ __('Booking History') }} →
                 </a>
             </div>
