@@ -40,12 +40,51 @@
                 </ul>
             </div>
 
-            @if (! in_array($booking->status, [\App\Enums\BookingStatus::Delivered, \App\Enums\BookingStatus::Cancelled], true))
-                <form method="post" action="{{ route('staff.bookings.advance', $booking) }}" class="rounded-lg bg-white p-6 shadow">
-                    @csrf
-                    <p class="text-sm text-gray-600 mb-3">{{ __('Advance the booking one step along the workflow.') }}</p>
-                    <x-primary-button type="submit">{{ __('Advance status') }}</x-primary-button>
-                </form>
+            @php
+                $steps = \App\Enums\BookingStatus::staffProgression();
+                $currentIdx = array_search($booking->status, $steps, true);
+            @endphp
+
+            @if ($currentIdx !== false)
+                <div class="rounded-lg bg-white p-6 shadow">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Update Booking') }}</h3>
+
+                    <div class="flex items-center justify-center">
+                        @foreach ($steps as $i => $step)
+                            @if ($i > 0)
+                                <div class="flex-1 h-0.5 max-w-8 {{ $i <= $currentIdx ? 'bg-indigo-500' : 'bg-gray-200' }}"></div>
+                            @endif
+                            <div class="flex flex-col items-center">
+                                <div @class([
+                                    'w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border-2',
+                                    'bg-indigo-600 border-indigo-600 text-white' => $i < $currentIdx,
+                                    'border-indigo-600 text-indigo-600 bg-indigo-50 ring-2 ring-indigo-200' => $i === $currentIdx,
+                                    'border-gray-300 text-gray-400 bg-white' => $i > $currentIdx,
+                                ])>
+                                    @if ($i < $currentIdx)
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
+                                    @else
+                                        {{ $i + 1 }}
+                                    @endif
+                                </div>
+                                <span @class([
+                                    'mt-1.5 text-xs font-semibold text-center',
+                                    'text-indigo-700' => $i <= $currentIdx,
+                                    'text-gray-400' => $i > $currentIdx,
+                                ])>{{ $step->label() }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    @if ($currentIdx < count($steps) - 1)
+                        <form method="post" action="{{ route('staff.bookings.advance', $booking) }}" class="mt-6 text-center">
+                            @csrf
+                            <x-primary-button type="submit">{{ __('Update Booking → :next', ['next' => $steps[$currentIdx + 1]->label()]) }}</x-primary-button>
+                        </form>
+                    @else
+                        <p class="mt-6 text-sm text-center text-green-600 font-medium">{{ __('This booking has been delivered.') }}</p>
+                    @endif
+                </div>
             @endif
         </div>
     </div>
