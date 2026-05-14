@@ -28,7 +28,7 @@ class BookingController extends Controller
 
     public function show(Booking $booking): View
     {
-        $booking->load(['customer', 'assignedStaff', 'items.service', 'review']);
+        $booking->load(['customer', 'assignedStaff', 'items.service', 'review', 'issues']);
 
         $staffMembers = User::query()
             ->where('role', \App\Enums\UserRole::Staff)

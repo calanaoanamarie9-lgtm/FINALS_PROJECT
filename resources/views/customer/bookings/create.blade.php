@@ -85,7 +85,7 @@
                                     </div>
                                     <div class="w-28">
                                         <x-input-label :for="'items_'.$service->id" :value="__('Qty')" />
-                                        <x-text-input :id="'items_'.$service->id" name="items[{{ $service->id }}]" type="number" min="0" class="mt-1 block w-full" :value="old('items.'.$service->id, (int) data_get(collect(old('items', []))->firstWhere('service_id', (int) $service->id), 'quantity', 0))" />
+                                        <x-text-input :id="'items_'.$service->id" name="items[{{ $service->id }}]" type="number" min="0" class="mt-1 block w-full" :value="(int) data_get(collect(old('items', []))->firstWhere('service_id', (int) $service->id), 'quantity', 0)" />
                                     </div>
                                 </div>
                             @endforeach

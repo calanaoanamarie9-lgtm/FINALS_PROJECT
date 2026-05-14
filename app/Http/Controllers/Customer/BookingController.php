@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Customer;
 use App\Enums\BookingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Issue;
+use App\Models\Review;
 use App\Models\Service;
 use App\Notifications\BookingPlacedNotification;
 use App\Notifications\BookingRescheduledNotification;
@@ -24,6 +26,28 @@ class BookingController extends Controller
             ->paginate(15);
 
         return view('customer.bookings.index', compact('bookings'));
+    }
+
+    public function reviewsIndex(): View
+    {
+        $reviews = Review::query()
+            ->where('customer_id', auth()->id())
+            ->with('booking')
+            ->latest()
+            ->paginate(15);
+
+        return view('customer.reviews.index', compact('reviews'));
+    }
+
+    public function issuesIndex(): View
+    {
+        $issues = Issue::query()
+            ->where('customer_id', auth()->id())
+            ->with('booking')
+            ->latest()
+            ->paginate(15);
+
+        return view('customer.issues.index', compact('issues'));
     }
 
     public const PAYMENT_METHODS = [
@@ -99,7 +123,7 @@ class BookingController extends Controller
     {
         abort_unless($booking->customer_id === auth()->id(), 403);
 
-        $booking->load(['assignedStaff', 'items.service', 'review']);
+        $booking->load(['assignedStaff', 'items.service', 'review', 'issues']);
 
         return view('customer.bookings.show', compact('booking'));
     }
@@ -187,6 +211,23 @@ class BookingController extends Controller
         );
 
         return back()->with('status', __('Thank you for your feedback.'));
+    }
+
+    public function storeIssue(Request $request, Booking $booking): RedirectResponse
+    {
+        abort_unless($booking->customer_id === auth()->id(), 403);
+        abort_unless($booking->status === BookingStatus::Delivered, 403);
+
+        $data = $request->validate([
+            'description' => ['required', 'string', 'max:5000'],
+        ]);
+
+        $booking->issues()->create([
+            'customer_id' => auth()->id(),
+            'description' => $data['description'],
+        ]);
+
+        return back()->with('status', __('Your issue has been reported. We will look into it.'));
     }
 
     private function normalizeBookingFormRequest(Request $request): void

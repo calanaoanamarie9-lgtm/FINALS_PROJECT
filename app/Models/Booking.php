@@ -64,6 +64,11 @@ class Booking extends Model
         return $this->hasOne(Review::class);
     }
 
+    public function issues(): HasMany
+    {
+        return $this->hasMany(Issue::class);
+    }
+
     public function isCancelled(): bool
     {
         return $this->status === BookingStatus::Cancelled;

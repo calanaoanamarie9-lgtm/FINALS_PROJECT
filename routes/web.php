@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\InboxController;
+use App\Http\Controllers\Admin\IssueController as AdminIssueController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
@@ -40,6 +41,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/bookings/{booking}/payment-method', [CustomerBookingController::class, 'updatePaymentMethod'])->name('customer.bookings.payment-method');
         Route::patch('/bookings/{booking}/reschedule', [CustomerBookingController::class, 'reschedule'])->name('customer.bookings.reschedule');
         Route::post('/bookings/{booking}/review', [CustomerBookingController::class, 'storeReview'])->name('customer.bookings.review');
+        Route::post('/bookings/{booking}/issue', [CustomerBookingController::class, 'storeIssue'])->name('customer.bookings.issue');
+        Route::get('/reviews', [CustomerBookingController::class, 'reviewsIndex'])->name('customer.reviews.index');
+        Route::get('/issues', [CustomerBookingController::class, 'issuesIndex'])->name('customer.issues.index');
     });
 
     Route::middleware('role:staff')->prefix('staff')->name('staff.')->group(function () {
@@ -81,6 +85,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
         Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+        Route::get('/issues', [AdminIssueController::class, 'index'])->name('issues.index');
+        Route::post('/issues/{issue}/resolve', [AdminIssueController::class, 'resolve'])->name('issues.resolve');
         Route::get('/reports', ReportController::class)->name('reports');
         Route::get('/notifications', [InboxController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/{id}/read', [InboxController::class, 'read'])->name('notifications.read');

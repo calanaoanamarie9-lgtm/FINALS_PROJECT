@@ -70,6 +70,9 @@
                     <x-admin-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
                         Reviews
                     </x-admin-nav-link>
+                    <x-admin-nav-link :href="route('admin.issues.index')" :active="request()->routeIs('admin.issues.*')">
+                        Issues
+                    </x-admin-nav-link>
                     <x-admin-nav-link :href="route('admin.reports')" :active="request()->routeIs('admin.reports')">
                         Reports
                     </x-admin-nav-link>

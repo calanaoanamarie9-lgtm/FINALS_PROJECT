@@ -69,7 +69,7 @@ class BookingController extends Controller
     {
         abort_unless($booking->assigned_staff_id === auth()->id(), 403);
 
-        $booking->load(['customer', 'items.service', 'review']);
+        $booking->load(['customer', 'items.service', 'review', 'issues']);
 
         return view('staff.bookings.show', compact('booking'));
     }

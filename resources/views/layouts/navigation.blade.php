@@ -20,6 +20,12 @@
                         <x-nav-link :href="route('customer.bookings.index')" :active="request()->routeIs('customer.bookings.*')">
                             {{ __('My bookings') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('customer.reviews.index')" :active="request()->routeIs('customer.reviews.*')">
+                            {{ __('My Reviews') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('customer.issues.index')" :active="request()->routeIs('customer.issues.*')">
+                            {{ __('My Issues') }}
+                        </x-nav-link>
                     @endif
 
                     @if (auth()->user()?->isStaff())
@@ -49,6 +55,9 @@
                         </x-nav-link>
                         <x-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
                             {{ __('Reviews') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.issues.index')" :active="request()->routeIs('admin.issues.*')">
+                            {{ __('Issues') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.reports')" :active="request()->routeIs('admin.reports')">
                             {{ __('Reports') }}
@@ -132,6 +141,12 @@
                 <x-responsive-nav-link :href="route('customer.bookings.index')" :active="request()->routeIs('customer.bookings.*')">
                     {{ __('My bookings') }}
                 </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('customer.reviews.index')" :active="request()->routeIs('customer.reviews.*')">
+                    {{ __('My Reviews') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('customer.issues.index')" :active="request()->routeIs('customer.issues.*')">
+                    {{ __('My Issues') }}
+                </x-responsive-nav-link>
             @endif
 
             @if (auth()->user()?->isStaff())
@@ -164,6 +179,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
                     {{ __('Reviews') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.issues.index')" :active="request()->routeIs('admin.issues.*')">
+                    {{ __('Issues') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reports')" :active="request()->routeIs('admin.reports')">
                     {{ __('Reports') }}

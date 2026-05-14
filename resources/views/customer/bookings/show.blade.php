@@ -72,36 +72,80 @@
                     </form>
                 </div>
 
-                <form method="post" action="{{ route('customer.bookings.cancel', $booking) }}" onsubmit="return confirm('{{ __('Cancel this booking?') }}');" class="rounded-lg bg-white p-6 shadow">
+                <form method="post" action="{{ route('customer.bookings.cancel', $booking) }}" class="rounded-lg bg-white p-6 shadow" x-data @submit.prevent="Swal.fire({ title: '{{ __('Cancel booking?') }}', text: '{{ __('This action cannot be undone.') }}', icon: 'warning', showCancelButton: true, confirmButtonText: '{{ __('Yes, cancel it') }}', cancelButtonText: '{{ __('Keep booking') }}' }).then(r => { if (r.isConfirmed) $el.submit() })">
                     @csrf
                     <x-danger-button type="submit">{{ __('Cancel booking') }}</x-danger-button>
                 </form>
             @endif
 
             @if ($booking->status === \App\Enums\BookingStatus::Delivered)
+                {{-- Review --}}
                 <div class="rounded-lg bg-white p-6 shadow space-y-4">
                     <h3 class="text-lg font-medium text-gray-900">{{ __('Rate your experience') }}</h3>
+
                     @if ($booking->review)
-                        <p class="text-sm text-gray-700">{{ __('You rated this booking :n/5.', ['n' => $booking->review->rating]) }}</p>
-                        <p class="text-sm text-gray-600">{{ $booking->review->comment }}</p>
+                        <div class="flex items-center gap-1 mb-2">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <svg class="w-5 h-5 {{ $i <= $booking->review->rating ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                            @endfor
+                        </div>
+                        @if ($booking->review->comment)
+                            <p class="text-sm text-gray-700">{{ $booking->review->comment }}</p>
+                        @endif
                     @else
-                        <form method="post" action="{{ route('customer.bookings.review', $booking) }}" class="space-y-4">
+                        <form method="post" action="{{ route('customer.bookings.review', $booking) }}" class="space-y-4" x-data="{ rating: 0, hovered: 0 }">
                             @csrf
                             <div>
-                                <x-input-label for="rating" :value="__('Rating (1-5)')" />
-                                <select id="rating" name="rating" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                                    @for ($i = 5; $i >= 1; $i--)
-                                        <option value="{{ $i }}">{{ $i }}</option>
-                                    @endfor
-                                </select>
+                                <x-input-label :value="__('Rating')" />
+                                <div class="flex items-center gap-1 mt-1">
+                                    <template x-for="i in 5" :key="i">
+                                        <button type="button" @click="rating = i" @mouseenter="hovered = i" @mouseleave="hovered = 0" class="focus:outline-none">
+                                            <svg class="w-8 h-8 transition-colors" :class="i <= (hovered || rating) ? 'text-yellow-400' : 'text-gray-300'" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                            </svg>
+                                        </button>
+                                    </template>
+                                    <input type="hidden" name="rating" x-bind:value="rating" />
+                                </div>
                             </div>
                             <div>
-                                <x-input-label for="comment" :value="__('Comments')" />
-                                <textarea id="comment" name="comment" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                                <x-input-label for="comment" :value="__('Comments (optional)')" />
+                                <textarea id="comment" name="comment" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="{{ __('Tell us about your experience...') }}"></textarea>
                             </div>
-                            <x-primary-button type="submit">{{ __('Submit review') }}</x-primary-button>
+                            <x-primary-button type="submit" x-bind:disabled="!rating">{{ __('Submit review') }}</x-primary-button>
                         </form>
                     @endif
+                </div>
+
+                {{-- Report a problem --}}
+                <div class="rounded-lg bg-white p-6 shadow space-y-4">
+                    <h3 class="text-lg font-medium text-gray-900">{{ __('Report an issue') }}</h3>
+                    <p class="text-sm text-gray-600">{{ __('Let us know if you experienced any problems with your laundry.') }}</p>
+
+                    @if ($booking->issues->isNotEmpty())
+                        @foreach ($booking->issues as $issue)
+                            <div class="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-xs font-semibold {{ $issue->status === 'resolved' ? 'text-green-600' : 'text-amber-600' }}">
+                                        {{ $issue->status === 'resolved' ? __('Resolved') : __('Open') }}
+                                    </span>
+                                    <span class="text-xs text-gray-400">{{ $issue->created_at->timezone(config('app.timezone'))->diffForHumans() }}</span>
+                                </div>
+                                <p class="text-gray-700">{{ $issue->description }}</p>
+                            </div>
+                        @endforeach
+                    @endif
+
+                    <form method="post" action="{{ route('customer.bookings.issue', $booking) }}" class="space-y-4">
+                        @csrf
+                        <div>
+                            <x-input-label for="issue_description" :value="__('Describe the issue')" />
+                            <textarea id="issue_description" name="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="{{ __('Describe what went wrong...') }}" required></textarea>
+                        </div>
+                        <x-primary-button type="submit">{{ __('Submit issue') }}</x-primary-button>
+                    </form>
                 </div>
             @endif
         </div>
