@@ -37,7 +37,18 @@
                 </div>
 
                 {{-- Navigation --}}
-                <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+                <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1" x-data="{ unread: 0 }" x-init="
+                    let url = '{{ route('admin.notifications.index') }}';
+                    let fetchCount = () => {
+                        let headers = new Headers({ 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' });
+                        fetch(url + '?count=1', { headers })
+                            .then(r => r.json())
+                            .then(d => { if (d.count !== undefined) unread = d.count; })
+                            .catch(() => {});
+                    };
+                    fetchCount();
+                    setInterval(fetchCount, 30000);
+                ">
                     <x-admin-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         Dashboard
                     </x-admin-nav-link>
@@ -63,7 +74,10 @@
                         Reports
                     </x-admin-nav-link>
                     <x-admin-nav-link :href="route('admin.notifications.index')" :active="request()->routeIs('admin.notifications.*')">
-                        Notifications
+                        <span class="flex items-center gap-2">
+                            Notifications
+                            <span x-show="unread > 0" style="display: none" class="inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-red-500 rounded-full min-w-[1.25rem]" x-text="unread"></span>
+                        </span>
                     </x-admin-nav-link>
                 </nav>
 

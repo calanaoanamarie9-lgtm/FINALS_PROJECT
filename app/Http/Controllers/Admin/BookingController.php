@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Notifications\BookingAssignedNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -46,7 +47,17 @@ class BookingController extends Controller
             'status' => ['required', \Illuminate\Validation\Rule::enum(\App\Enums\BookingStatus::class)],
         ]);
 
+        $oldStaffId = $booking->assigned_staff_id;
+
         $booking->update($validated);
+
+        $newStaffId = $booking->assigned_staff_id;
+
+        if ($newStaffId && $newStaffId !== $oldStaffId) {
+            $booking->loadMissing('customer');
+            $staff = User::find($newStaffId);
+            $staff?->notify(new BookingAssignedNotification($booking));
+        }
 
         return back()->with('status', __('Booking updated.'));
     }

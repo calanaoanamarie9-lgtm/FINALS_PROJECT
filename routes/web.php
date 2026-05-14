@@ -13,6 +13,7 @@ use App\Http\Controllers\Customer\ServiceBrowseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Staff\BookingController as StaffBookingController;
+use App\Http\Controllers\Staff\InboxController as StaffInboxController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -46,6 +47,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/bookings/history', [StaffBookingController::class, 'history'])->name('bookings.history');
         Route::get('/bookings/{booking}', [StaffBookingController::class, 'show'])->name('bookings.show');
         Route::post('/bookings/{booking}/advance', [StaffBookingController::class, 'advance'])->name('bookings.advance');
+
+        Route::get('/notifications', [StaffInboxController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/{id}/read', [StaffInboxController::class, 'read'])->name('notifications.read');
+        Route::get('/notifications/unread-count', [StaffInboxController::class, 'unreadCount'])->name('notifications.unread-count');
     });
 
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {

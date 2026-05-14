@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Service;
 use App\Notifications\BookingPlacedNotification;
+use App\Notifications\BookingRescheduledNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -157,6 +158,11 @@ class BookingController extends Controller
             ...$data,
             'reschedule_count' => $booking->reschedule_count + 1,
         ]);
+
+        if ($booking->assignedStaff) {
+            $booking->loadMissing('customer');
+            $booking->assignedStaff->notify(new BookingRescheduledNotification($booking));
+        }
 
         return back()->with('status', __('Pickup and delivery times updated.'));
     }
