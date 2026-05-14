@@ -15,7 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\EnsureRole::class,
         ]);
 
-        $middleware->validateCsrfTokens(except: []);
+        $middleware->validateCsrfTokens(except: [
+            'register',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

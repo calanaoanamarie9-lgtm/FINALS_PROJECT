@@ -13,9 +13,6 @@
             @endforeach
         </div>
 
-        <div class="mt-10 flex flex-wrap gap-4">
-            <a class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500" href="{{ route('register') }}">{{ __('Create customer account') }}</a>
-            <a class="inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50" href="{{ route('login') }}">{{ __('Sign in') }}</a>
-        </div>
+
     </div>
 </x-guest-layout>
