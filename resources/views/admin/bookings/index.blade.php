@@ -49,9 +49,9 @@
                                 <td class="px-4 py-2">{{ number_format((float) $booking->total_amount, 2) }}</td>
                                 <td class="px-4 py-2">
                                     @if ($booking->isPaid())
-                                        <span class="text-green-700">{{ $booking->paymentChannelLabel() ?? __('Paid') }}</span>
+                                        <span class="text-green-700 font-medium">{{ __('Paid') }}</span>@if ($booking->paymentChannelLabel()) <span class="text-green-600">({{ $booking->paymentChannelLabel() }})</span>@endif
                                     @elseif ((float) $booking->total_amount > 0)
-                                        <span class="text-gray-400">{{ $booking->paymentChannelLabel() ?? '—' }}</span>
+                                        <span class="text-amber-600 font-medium">{{ __('Unpaid') }}</span>@if ($booking->paymentChannelLabel()) <span class="text-amber-500">({{ $booking->paymentChannelLabel() }})</span>@endif
                                     @else
                                         <span class="text-gray-400">—</span>
                                     @endif

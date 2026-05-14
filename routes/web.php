@@ -43,6 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware('role:staff')->prefix('staff')->name('staff.')->group(function () {
         Route::get('/bookings', [StaffBookingController::class, 'index'])->name('bookings.index');
+        Route::get('/bookings/history', [StaffBookingController::class, 'history'])->name('bookings.history');
         Route::get('/bookings/{booking}', [StaffBookingController::class, 'show'])->name('bookings.show');
         Route::post('/bookings/{booking}/advance', [StaffBookingController::class, 'advance'])->name('bookings.advance');
     });

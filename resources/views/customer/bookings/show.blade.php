@@ -29,6 +29,7 @@
                         @endif
                     </p>
                 @elseif ((float) $booking->total_amount > 0 && ! $booking->isCancelled())
+                    <p class="text-amber-600 font-medium text-sm">{{ __('Unpaid') }}</p>
                     <form method="post" action="{{ route('customer.bookings.payment-method', $booking) }}" class="flex items-center gap-2 mt-2">
                         @csrf
                         @method('patch')

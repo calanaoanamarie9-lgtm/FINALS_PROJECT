@@ -25,9 +25,9 @@
                 <p><span class="font-semibold">{{ __('Delivery address') }}:</span> {{ $booking->delivery_address }}</p>
                 <p><span class="font-semibold">{{ __('Total') }}:</span> {{ number_format((float) $booking->total_amount, 2) }} PHP</p>
                 @if ($booking->isPaid())
-                    <p><span class="font-semibold">{{ __('Payment') }}:</span> {{ __('Paid') }} ({{ $booking->paymentChannelLabel() ?? __('Online') }})</p>
+                    <p><span class="font-semibold">{{ __('Payment') }}:</span> <span class="text-green-700 font-medium">{{ __('Paid') }}</span> ({{ $booking->paymentChannelLabel() ?? __('Online') }}) @if ($booking->paid_at) — {{ $booking->paid_at->timezone(config('app.timezone'))->toDayDateTimeString() }} @endif</p>
                 @elseif ((float) $booking->total_amount > 0)
-                    <p><span class="font-semibold">{{ __('Payment') }}:</span> {{ __('Not on file') }}</p>
+                    <p><span class="font-semibold">{{ __('Payment') }}:</span> <span class="text-amber-600 font-medium">{{ __('Unpaid') }}</span>@if ($booking->payment_channel) ({{ $booking->paymentChannelLabel() }}) @endif</p>
                 @endif
             </div>
 

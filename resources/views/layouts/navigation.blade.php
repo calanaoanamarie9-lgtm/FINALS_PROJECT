@@ -23,8 +23,11 @@
                     @endif
 
                     @if (auth()->user()?->isStaff())
-                        <x-nav-link :href="route('staff.bookings.index')" :active="request()->routeIs('staff.bookings.*')">
+                        <x-nav-link :href="route('staff.bookings.index')" :active="request()->routeIs('staff.bookings.index')">
                             {{ __('Assigned bookings') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('staff.bookings.history')" :active="request()->routeIs('staff.bookings.history')">
+                            {{ __('History') }}
                         </x-nav-link>
                     @endif
 
@@ -115,8 +118,11 @@
             @endif
 
             @if (auth()->user()?->isStaff())
-                <x-responsive-nav-link :href="route('staff.bookings.index')" :active="request()->routeIs('staff.bookings.*')">
+                <x-responsive-nav-link :href="route('staff.bookings.index')" :active="request()->routeIs('staff.bookings.index')">
                     {{ __('Assigned bookings') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('staff.bookings.history')" :active="request()->routeIs('staff.bookings.history')">
+                    {{ __('History') }}
                 </x-responsive-nav-link>
             @endif
 

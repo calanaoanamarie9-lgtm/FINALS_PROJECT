@@ -21,6 +21,21 @@ class BookingController extends Controller
         return view('staff.bookings.index', compact('bookings'));
     }
 
+    public function history(): View
+    {
+        $bookings = Booking::query()
+            ->where('assigned_staff_id', auth()->id())
+            ->whereIn('status', [
+                BookingStatus::Delivered,
+                BookingStatus::Cancelled,
+            ])
+            ->with('customer')
+            ->latest()
+            ->paginate(15);
+
+        return view('staff.bookings.history', compact('bookings'));
+    }
+
     public function show(Booking $booking): View
     {
         abort_unless($booking->assigned_staff_id === auth()->id(), 403);
